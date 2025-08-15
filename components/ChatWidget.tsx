@@ -114,9 +114,10 @@ export default function ChatWidget() {
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
-                    code({ node, inline, className, children, ...props }) {
+                    code({ node, className, children, ...props }) {
                       const codeText = String(children).replace(/\n$/, "");
-                      if (inline) {
+                      // react-markdown v8+ uses node.type === 'inlineCode' for inline code
+                      if (node && (node as any).type === 'inlineCode') {
                         return <code className="bg-gray-800 p-1 rounded">{children}</code>;
                       }
                       return (

@@ -3,7 +3,8 @@ import { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
 
 export default function ChatBox() {
-  const [messages, setMessages] = useState<{ role:"user"|"assistant"; content:string }[]>([]);
+  type Message = { role: "user" | "assistant"; content: string };
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
@@ -12,8 +13,8 @@ export default function ChatBox() {
 
   async function sendMessage() {
     if (!input.trim()) return;
-    const userMsg = { role:"user", content: input };
-    setMessages((prev) => [...prev, userMsg]);
+  const userMsg: Message = { role: "user", content: input };
+  setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsLoading(true);
     try {
@@ -24,16 +25,20 @@ export default function ChatBox() {
       if (!res.ok) throw new Error("API failed");
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
-      let assistantMsg = { role:"assistant", content: "" };
-      setMessages((prev) => [...prev, assistantMsg]);
+  let assistantMsg: Message = { role: "assistant", content: "" };
+  setMessages((prev) => [...prev, assistantMsg]);
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        assistantMsg.content += decoder.decode(value);
-        setMessages((prev) => { const c = [...prev]; c[c.length-1] = assistantMsg; return c; });
+        assistantMsg = { ...assistantMsg, content: assistantMsg.content + decoder.decode(value) };
+        setMessages((prev) => {
+          const c = [...prev];
+          c[c.length - 1] = assistantMsg;
+          return c;
+        });
       }
     } catch {
-      setMessages((prev) => [...prev, { role:"assistant", content: "Error getting response." }]);
+  setMessages((prev) => [...prev, { role: "assistant", content: "Error getting response." }]);
     } finally {
       setIsLoading(false);
     }
