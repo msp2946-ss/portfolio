@@ -1,5 +1,6 @@
 'use client';
 import { motion } from "framer-motion";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function Hero() {
   return (

@@ -1,4 +1,4 @@
-// File: /Users/shreyanshpratapmishra/portfolio-nextjs-dark-fixed/app/layout.tsx
+// File: /Users/shreyanshpratapmishra/portfolio msp/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
