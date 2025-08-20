@@ -29,12 +29,12 @@ export default function Page() {
                 <h3 className="text-white font-semibold mb-3">My Journey</h3>
                 <p className="text-subtext">
                   Hello! I'm Shreyansh Pratap Mishra, a dedicated Computer Science
-                  Engineering student at IIITM University, Greater Noida.
+                  Engineering student.
                 </p>
                 <p className="text-subtext mt-4">
                   I specialize in{" "}
-                  <span className="gradient-accent">full-stack development</span>{" "}
-                  and <span className="gradient-accent">machine learning</span>, with
+                  <span className="gradient-accent">full-stacks & development</span>{" "}
+                   <span className="gradient-accent"></span> with
                   hands-on experience in building applications that solve real-world
                   problems.
                 </p>
@@ -44,7 +44,12 @@ export default function Page() {
                   <h4 className="text-white font-semibold">
                     B.Tech in Computer Science Engineering
                   </h4>
-                  <a className="text-brand-400 text-sm" href="#">
+                  <a
+                    href="https://iilm.ac.in/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand-400 text-sm underline"
+                  >
                     IILM University, Greater Noida
                   </a>
                   <p className="text-xs text-subtext mt-1">
@@ -56,7 +61,12 @@ export default function Page() {
                 </div>
                 <div className="card">
                   <h4 className="text-white font-semibold">High School Education</h4>
-                  <a className="text-brand-400 text-sm" href="#">
+                  <a
+                    href="https://bnsschoolkursato.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand-400 text-sm underline"
+                  >
                     B.N.S School Kursato Varanasi
                   </a>
                   <p className="text-xs text-subtext mt-1">2021–2024</p>
@@ -89,11 +99,11 @@ export default function Page() {
               />
               <ExperienceCard
                 title="Software Developer"
-                org="Hackathon Participation"
+                org={<a href="https://drive.google.com/file/d/1iKb5avTMRAroC47QUYUxMSHPu5YU3cAj/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="text-brand-400 underline">Hackathon Participation</a>}
                 period="2023–2024"
                 points={[
                   "Collaborated in college hackathons to deliver working prototypes.",
-                  "Participated in GFG HackFest showcasing problem-solving skills.",
+                  "Also participated in GFG HackFest showcasing problem-solving skills.",
                   "Worked under time constraints with a team.",
                 ]}
                 tags={["Team Collaboration", "Problem Solving", "Time Management"]}

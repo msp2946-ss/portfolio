@@ -1,9 +1,10 @@
 'use client';
 import { motion } from "framer-motion";
+import { ReactNode } from "react";
 
 export default function ExperienceCard({
   title, org, period, points, tags
-}: { title: string; org: string; period: string; points: string[]; tags: string[] }) {
+}: { title: string; org: ReactNode; period: string; points: string[]; tags: string[] }) {
   return (
     <motion.div
       className="card"
@@ -15,7 +16,11 @@ export default function ExperienceCard({
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
         <div>
           <h3 className="font-semibold text-white">{title}</h3>
-          <a href="#" className="text-brand-400 text-sm">{org}</a>
+          {typeof org === "string" ? (
+            <a href="#" className="text-brand-400 text-sm">{org}</a>
+          ) : (
+            org
+          )}
           <p className="text-xs text-subtext mt-1">{period}</p>
         </div>
       </div>

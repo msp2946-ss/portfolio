@@ -22,6 +22,7 @@ export default function Nav() {
       }`}
     >
       <div className="container-xxl h-16 flex items-center justify-between">
+        {/* Logo */}
         <Link href="/" className="font-semibold text-brand-400">
           MSP
         </Link>
@@ -29,40 +30,37 @@ export default function Nav() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-subtext">
           {(navLinks ?? []).map((l) => (
-            <a
+            <Link
               key={l.href}
               href={l.href}
-              className="hover:text-white"
+              className="hover:text-white transition"
             >
               {l.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
-        {/* Social Icons - visible on all screens */}
+        {/* Social Icons */}
         <div className="flex items-center gap-4 text-subtext">
-          <a
+          <Link
             href="https://github.com/msp2946-ss"
             aria-label="GitHub"
             target="_blank"
             rel="noopener noreferrer"
           >
             <Github size={18} />
-          </a>
-          <a
+          </Link>
+          <Link
             href="https://www.linkedin.com/in/shreyansh-pratap-mishra-84181532a/"
             aria-label="LinkedIn"
             target="_blank"
             rel="noopener noreferrer"
           >
             <Linkedin size={18} />
-          </a>
-          <a
-            href="mailto:shreyanshji2946@gmail.com"
-            aria-label="Email"
-          >
+          </Link>
+          <Link href="mailto:shreyanshji2946@gmail.com" aria-label="Email">
             <Mail size={18} />
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -80,13 +78,14 @@ export default function Nav() {
         <div className="md:hidden border-t border-border bg-bg/90 backdrop-blur">
           <div className="container-xxl py-3 flex flex-col gap-3 text-sm">
             {(navLinks ?? []).map((l) => (
-              <a
+              <Link
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
+                className="hover:text-white transition"
               >
                 {l.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
