@@ -22,8 +22,12 @@ async function run() {
   const envPath = path.resolve(process.cwd(), '.env.local');
   console.log('Loading', envPath);
   loadEnvFile(envPath);
+  // also attempt to load .env for cases where user put credentials there
+  loadEnvFile(path.resolve(process.cwd(), '.env'));
 
-  const { SENDGRID_API_KEY, SMTP_URL, GMAIL_USER, GMAIL_PASS, RECEIVER_EMAIL } = process.env;
+  let { SENDGRID_API_KEY, SMTP_URL, GMAIL_USER, GMAIL_PASS, RECEIVER_EMAIL } = process.env;
+  if (GMAIL_USER) GMAIL_USER = GMAIL_USER.trim();
+  if (GMAIL_PASS) GMAIL_PASS = GMAIL_PASS.replace(/\s+/g, '').trim();
 
   if (!SENDGRID_API_KEY && !SMTP_URL && (!GMAIL_USER || !GMAIL_PASS)) {
     console.error('Missing configuration. Please create .env.local with either SENDGRID_API_KEY or SMTP_URL or GMAIL_USER+GMAIL_PASS.');

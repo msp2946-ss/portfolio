@@ -1,23 +1,26 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import fs from "fs";
+import path from "path";
 
-async function sendWithSendGrid(apiKey: string, to: string, from: string, subject: string, text: string, html: string) {
-  const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      personalizations: [{ to: [{ email: to }] }],
-      from: { email: from, name: "Portfolio Contact" },
-      subject,
-      content: [{ type: "text/plain", value: text }, { type: "text/html", value: html }],
-    }),
-  });
-  if (!res.ok) {
-    const txt = await res.text();
-    throw new Error(`SendGrid send failed: ${res.status} ${txt}`);
+function loadDotEnvFile(filePath: string) {
+  try {
+    const content = fs.readFileSync(filePath, "utf8");
+    const lines = content.split(/\n/);
+    for (const line of lines) {
+      const l = line.trim();
+      if (!l || l.startsWith("#") || l.indexOf("=") === -1) continue;
+      const idx = l.indexOf("=");
+      const key = l.slice(0, idx);
+      let val = l.slice(idx + 1);
+      // remove surrounding quotes
+      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.slice(1, -1);
+      }
+      if (!process.env[key]) process.env[key] = val;
+    }
+  } catch (e) {
+    // ignore
   }
 }
 
@@ -29,14 +32,29 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-  const { GMAIL_USER, GMAIL_PASS, RECEIVER_EMAIL, SMTP_URL, SENDGRID_API_KEY } = process.env;
+    // Fallback: attempt to load .env if variables are missing (useful when .env exists in repo)
+    const rootEnvPath = path.resolve(process.cwd(), ".env");
+    loadDotEnvFile(rootEnvPath);
+    // also attempt .env.local
+    loadDotEnvFile(path.resolve(process.cwd(), ".env.local"));
+
+    let { GMAIL_USER, GMAIL_PASS, RECEIVER_EMAIL, SMTP_URL } = process.env as {
+      GMAIL_USER?: string;
+      GMAIL_PASS?: string;
+      RECEIVER_EMAIL?: string;
+      SMTP_URL?: string;
+    };
+
+    // Normalize credentials: trim and remove accidental spaces in app password
+    if (GMAIL_USER) GMAIL_USER = GMAIL_USER.trim();
+    if (GMAIL_PASS) GMAIL_PASS = GMAIL_PASS.replace(/\s+/g, '').trim();
 
     // Validate config: either SMTP_URL or GMAIL_USER+GMAIL_PASS must be present
     if (!SMTP_URL && (!GMAIL_USER || !GMAIL_PASS)) {
       console.error("SMTP not configured: missing environment variables.");
       return NextResponse.json({
         error:
-          "SMTP is not configured. Set SMTP_URL or GMAIL_USER and GMAIL_PASS in your environment variables (Vercel Dashboard -> Settings -> Environment Variables).",
+          "SMTP is not configured. Set GMAIL_USER and GMAIL_PASS (App Password) in your environment variables (Vercel Dashboard -> Settings -> Environment Variables) or add a .env file locally.",
       }, { status: 500 });
     }
 
@@ -50,17 +68,6 @@ export async function POST(req: Request) {
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Message:</strong><br/>${message}</p>
       `;
-
-    // If SendGrid key is provided, prefer API-based sending (recommended on Vercel)
-    if (SENDGRID_API_KEY) {
-      try {
-        await sendWithSendGrid(SENDGRID_API_KEY, to!, from!, subj, text, html);
-      } catch (sgErr: any) {
-        console.error("SendGrid send failed:", sgErr?.message || sgErr);
-        return NextResponse.json({ error: `SendGrid send failed: ${sgErr?.message || sgErr}` }, { status: 500 });
-      }
-      return NextResponse.json({ success: true, message: "Email sent via SendGrid" });
-    }
 
     // Create transporter from SMTP_URL if provided, else use Gmail config
     const transporter = SMTP_URL
